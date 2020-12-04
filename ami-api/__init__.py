@@ -22,10 +22,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import index
     from . import ami
-
-    app.register_blueprint(index.bp)
     app.register_blueprint(ami.bp)
 
     return app
