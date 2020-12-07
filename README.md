@@ -18,7 +18,7 @@ export AWS_REGION=<aws_region>
 
 ```bash
 $ git clone https://github.com/infa-sstevanu/aws-ami-api
-$ cd aws-ami_api
+$ cd aws-ami-api
 ```
 
 ### Start a virtual environment
@@ -51,10 +51,10 @@ OR
 You can use docker to run the api (with this you don't need to start a virtualenv and pip install)
 
 ```bash
-$ git clone https://github.com/infa-sstevanu/aws-ami_api
-$ cd aws-ami_api
+$ git clone https://github.com/infa-sstevanu/aws-ami-api
+$ cd aws-ami-api
 $ docker build -t ami_api .
-$ docker run -v ~/.aws:/home/ami_api/.aws -p 5000:5000 -d ami_api
+$ docker run -v ~/.aws:/home/ami-api/.aws -p 5000:5000 -d ami_api
 ```
 
 Visit http://127.0.0.1:5000 in a browser to test if the installation works properly
