@@ -6,4 +6,4 @@ def test_config():
 
 def test_hello(client):
     response = client.get('/health')
-    assert response.data == b'{"status":"healthy"}\n'
+    assert response.status_code == 200

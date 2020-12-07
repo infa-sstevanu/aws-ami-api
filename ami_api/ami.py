@@ -8,6 +8,7 @@ from flask import current_app
 bp = Blueprint('ami', __name__, url_prefix='/')
 
 invalid_tags_msg = 'invalid filter tags and/or limit value is not integer'
+cloud_session_expired = 'Cloud Session has expired'
 
 @bp.route('/', methods=['GET'])
 def index():
@@ -74,6 +75,6 @@ def get_ami():
 
     except Exception as e:
         current_app.logger.info(e)
-        return { 'msg': invalid_tags_msg }
+        return { 'msg': cloud_session_expired }
 
     return {}
