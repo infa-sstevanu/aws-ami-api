@@ -2,7 +2,7 @@ import os
 import boto3
 import functools
 from botocore.config import Config
-from flask import Blueprint, flash, g, redirect, request, session, url_for
+from flask import Blueprint, flash, g, request
 from flask import current_app
 
 bp = Blueprint('ami', __name__, url_prefix='/')
@@ -11,8 +11,12 @@ invalid_tags_msg = 'invalid filter tags and/or limit value is not integer'
 
 @bp.route('/', methods=['GET'])
 def index():
-    return { "name":"ami-api", "description":"REST API to get an ami based on regions, products and/or services" }
+    return { "name":"ami_api", "description":"REST API to get an ami based on regions, products and/or services" }
 
+@bp.route('/health', methods=['GET'])
+def health():
+    return { "status": "healthy" }
+    
 @bp.route('/ami', methods=['GET'])
 def get_ami():
     current_app.logger.info(request.args)
@@ -62,6 +66,9 @@ def get_ami():
 
         if limit:
             images = images[:limit]
+        else:
+            for image in ami_images:
+                images.append('{} {}'.format(image['ImageId'], image['CreationDate']))
 
         return { "images_ids": images }
 

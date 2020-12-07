@@ -10,7 +10,7 @@ RUN chown -R ami-api /app
 
 USER ami-api
 
-ENV FLASK_APP ami-api
+ENV FLASK_APP ami_api
 ENV FLASK_ENV development
 
 CMD flask run --host=0.0.0.0
