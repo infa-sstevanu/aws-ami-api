@@ -3,3 +3,4 @@ coverage
 flask
 gunicorn
 pytest
+wheel
