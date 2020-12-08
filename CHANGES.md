@@ -12,3 +12,8 @@
 0.3.0 (2020-12-07)
 ------------------
 * Add unit test
+
+0.4.0 (2020-12-08)
+------------------
+* Update the api endpoint
+* Update the Dockerfile

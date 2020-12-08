@@ -5,12 +5,11 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
-RUN adduser -D ami-api
-RUN chown -R ami-api /app
+RUN adduser -D apiuser
+RUN chown -R apiuser /app
 
-USER ami-api
+USER apiuser
 
 ENV FLASK_APP ami_api
-ENV FLASK_ENV development
 
-CMD flask run --host=0.0.0.0
+CMD gunicorn -w 2 -b 0.0.0.0:8080 "ami_api:create_app()"

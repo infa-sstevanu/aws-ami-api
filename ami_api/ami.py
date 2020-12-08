@@ -66,7 +66,7 @@ def get_ami():
         for image in ami_images:
             images.append('{}'.format(image['ImageId']))
 
-        if latest.lower() == 'true':
+        if latest and latest.lower() == 'true':
             return images[0]
 
         return { "images_ids": images }
