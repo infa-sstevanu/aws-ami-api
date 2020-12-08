@@ -59,17 +59,15 @@ def get_ami():
         for image in resp['Images']:
             ami_images.append(image)
 
-        images = []
-        if latest and latest != '0':
-            ami_images = sorted(ami_images, key=lambda image: image['CreationDate'], reverse=True)
-            for image in ami_images:
-                images.append('{} {}'.format(image['ImageId'], image['CreationDate']))
+        ami_images = sorted(ami_images, key=lambda image: image['CreationDate'], reverse=True)
 
-        if limit:
-            images = images[:limit]
-        else:
-            for image in ami_images:
-                images.append('{} {}'.format(image['ImageId'], image['CreationDate']))
+        images = []
+
+        for image in ami_images:
+            images.append('{}'.format(image['ImageId']))
+
+        if latest and latest.lower() == 'true':
+            return images[0]
 
         return { "images_ids": images }
 

@@ -61,6 +61,11 @@ Visit http://127.0.0.1:5000 in a browser to test if the installation works prope
 
 ## API Usage
 
+Check the healthy status of the API
+```bash
+$ curl "http://127.0.0.1:5000/health
+```
+
 Get the list of all available images on AWS_REGION=us-west-2 (default region)
 ```bash
 $ curl "http://127.0.0.1:5000/ami"
@@ -81,17 +86,12 @@ Even you can combine tags to filter specific result (separated by `;`):
 $ curl "http://127.0.0.1:5000/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT;VERSION:v0.1"
 ```
 
-Also you can choose to sort the result ASC using argument `latest`
+Return the latest image-id using argument `latest`
 ```bash
 $ curl "http://127.0.0.1:5000/ami?region=us-west-2&latest=true"
 ```
 
-And display result for number of lines using argument `limit`
+Lastly, combining arguments `tags`, `latest`
 ```bash
-$ curl "http://127.0.0.1:5000/ami?region=us-west-2&limit=10"
-```
-
-Lastly, combining arguments `tags`, `latest` and `limit`
-```bash
-$ curl "http://127.0.0.1:5000/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT;VERSION:v0.1&latest=true&limit=10"
+$ curl "http://127.0.0.1:5000/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT;VERSION:v0.1&latest=true"
 ```
