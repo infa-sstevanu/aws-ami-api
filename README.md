@@ -69,35 +69,69 @@ Visit http://127.0.0.1:8080 in a browser to test if the installation works prope
 
 Check the healthy status of the API
 ```bash
-$ curl "http://127.0.0.1:8080/health
+$ curl "http://API_URL/health
 ```
 
 Get the list of all available images on AWS_REGION=us-west-2 (default region)
 ```bash
-$ curl "http://127.0.0.1:8080/ami"
+$ curl "http://API_URL/ami"
 ```
 
-Retrieve the list of all available images on AWS_REGION=us-west-1
+Basic Usage
 ```bash
-$ curl "http://127.0.0.1:8080/ami?region=us-west-1"
+$ curl "http://API_URL/ami?provider=<aws|gcp|azure>&release=<Rxx.x>&os=<rhel|redhat|centos>&type=<infa|iics|cdie>&limit=<int>"
 ```
 
-Get the list of all available images with specific tags filter `Key= tag:SERVICENAME, Values=[CLOUDAGENT]`
+URL query parameters
+
+(Mandatory)
 ```bash
-$ curl "http://127.0.0.1:8080/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT"
+provider
+release
+os
 ```
 
-Even you can combine tags to filter specific result (separated by `;`):
+(Optional)
 ```bash
-$ curl "http://127.0.0.1:8080/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT;VERSION:v0.1"
+type
+limit
 ```
 
-Return the latest image-id using argument `latest`
+### Example
+
+Get all ami ids of AWS, R36 and RHEL (include Centos and RedHat)
 ```bash
-$ curl "http://127.0.0.1:8080/ami?region=us-west-2&latest=true"
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=rhel"
 ```
 
-Lastly, combining arguments `tags`, `latest`
+Get all ami ids of AWS/R36/RedHat
 ```bash
-$ curl "http://127.0.0.1:8080/ami?region=us-west-2&tags=SERVICENAME:CLOUDAGENT;VERSION:v0.1&latest=true"
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=redhat"
 ```
+
+Get the last 3 ami ids of AWS/R36/RedHat
+```bash
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=redhat&limit=3"
+```
+
+Get the last 10 ami ids of AWS/R36/Centos
+```bash
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=centos&limit=10"
+```
+
+Get the last 5 ami ids of AWS/R36/RedHat/CDIE
+```bash
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=Redhat&type=CDIE&limit=5"
+```
+
+Get the last ami id of AWS/R36.2/RHEL
+```bash
+$ curl "http://API_URL/ami?provider=aws&release=r36.2&os=Rhel&limit=1"
+```
+
+Get the last ami id of AWS/R36.2/RHEL/CDIE
+```bash
+$ curl "http://API_URL/ami?provider=aws&release=r36.2&os=Rhel&type=cdie&limit=1"
+```
+
+Note: The URL query parameter values are case-insensitive, ex: 'rhel' will yield the same result as 'RHEL' or 'Rhel'
