@@ -2,7 +2,6 @@
 ------------------
 * Initial release
 
-
 0.2.0 (2020-12-04)
 ------------------
 * Implement the boto3 filter tags
@@ -17,3 +16,8 @@
 ------------------
 * Update the api endpoint
 * Update the Dockerfile
+
+0.5.0 (2020-12-09)
+------------------
+* Implement the tinydb json
+* Update the sorting and query result

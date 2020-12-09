@@ -3,4 +3,5 @@ coverage
 flask
 gunicorn
 pytest
+tinydb
 wheel

@@ -1,13 +1,13 @@
 import os
-import boto3
 import functools
 from botocore.config import Config
 from flask import Blueprint, flash, g, request
 from flask import current_app
+from .libs.error_msg import request_cannot_empty
+from .libs.aws import get_ami_aws
 
 bp = Blueprint('ami', __name__, url_prefix='/')
 
-invalid_tags_msg = 'invalid filter tags and/or limit value is not integer'
 cloud_session_expired = 'Cloud Session has expired'
 
 @bp.route('/', methods=['GET'])
@@ -17,62 +17,25 @@ def index():
 @bp.route('/health', methods=['GET'])
 def health():
     return { "status": "healthy" }
-    
+
 @bp.route('/ami', methods=['GET'])
 def get_ami():
     current_app.logger.info(request.args)
 
-    region = request.args.get('region','us-west-2')
-    tags = request.args.get('tags','')
-    latest = request.args.get('latest', False)
+    provider = request.args.get('provider', '')
+    release = request.args.get('release', '')
+    platform = request.args.get('os', '')
+    types = request.args.get('type', '')
     limit = request.args.get('limit', 0)
 
-    filters = []
-    ami_images = []
+    if not provider:
+        return request_cannot_empty('provider')
+    elif not release:
+        return request_cannot_empty('release')
+    elif not platform:
+        return request_cannot_empty('os')
 
-    if tags:
-        try:
-            tags = tags.split(';')
-            for tag in tags:
-                key_value = tag.split(':')
-                if len(key_value) == 2:
-                    key = 'tag:{}'.format(key_value[0].upper())
-                    values = [key_value[1]]
-                    filters.append({ 'Name':key, 'Values':values })
-                else:
-                    return { 'msg': invalid_tags_msg }
-        except Exception as e:
-            current_app.logger.info(e)
-
-    try:
-        limit = int(limit)
-    except ValueError as ve:
-        current_app.logger.info(ve)
-        return { 'msg': invalid_tags_msg }
-
-    aws_config = Config(region_name=region)
-    client = boto3.client('ec2', config=aws_config)
-
-    try:
-        resp = client.describe_images(Owners=['self'], Filters=filters, DryRun=False)
-
-        for image in resp['Images']:
-            ami_images.append(image)
-
-        ami_images = sorted(ami_images, key=lambda image: image['CreationDate'], reverse=True)
-
-        images = []
-
-        for image in ami_images:
-            images.append('{}'.format(image['ImageId']))
-
-        if latest and latest.lower() == 'true':
-            return images[0]
-
-        return { "images_ids": images }
-
-    except Exception as e:
-        current_app.logger.info(e)
-        return { 'msg': cloud_session_expired }
-
-    return {}
+    if provider.lower() == 'aws':
+        return get_ami_aws(release, platform, types, limit)
+    else:
+        return { "err_msg": "Provider '{}' is not available".format(provider) }
