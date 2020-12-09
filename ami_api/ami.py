@@ -32,7 +32,9 @@ def get_ami():
         return request_cannot_empty('provider')
     elif not release:
         return request_cannot_empty('release')
-    
+    elif not platform:
+        return request_cannot_empty('os')
+
     if provider.lower() == 'aws':
         return get_ami_aws(release, platform, types)
     else:
