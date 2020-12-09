@@ -18,7 +18,7 @@ def filter_ami_image(ami_image, release, platform, types=None):
 
     if release not in ami_image['release']:
         return False
-    if types != ami_image['type']:
+    if types and types != ami_image['type']:
         return False
     if platform == ami_image['os']:
         return True   
@@ -87,5 +87,12 @@ def get_ami_aws(release, platform, types=None, limit=None):
     for ami_image in aws_images:
         if filter_ami_image(ami_image, release, platform, types):
             result.append(ami_image)
+
+    try:
+        if limit:
+            result = result[:int(limit)]
+    except ValueError as e:
+        current_app.logger.info(e)
+        return { 'err_msg': 'limit value is not integer' }
 
     return { 'images': result }

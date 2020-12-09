@@ -8,7 +8,6 @@ from .libs.aws import get_ami_aws
 
 bp = Blueprint('ami', __name__, url_prefix='/')
 
-invalid_tags_msg = 'invalid filter tags and/or limit value is not integer'
 cloud_session_expired = 'Cloud Session has expired'
 
 @bp.route('/', methods=['GET'])
@@ -27,6 +26,7 @@ def get_ami():
     release = request.args.get('release', '')
     platform = request.args.get('os', '')
     types = request.args.get('type', '')
+    limit = request.args.get('limit', 0)
 
     if not provider:
         return request_cannot_empty('provider')
@@ -36,6 +36,6 @@ def get_ami():
         return request_cannot_empty('os')
 
     if provider.lower() == 'aws':
-        return get_ami_aws(release, platform, types)
+        return get_ami_aws(release, platform, types, limit)
     else:
         return { "err_msg": "Provider '{}' is not available".format(provider) }
