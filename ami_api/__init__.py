@@ -1,8 +1,11 @@
 import os
-
+import threading
+from time import sleep
+from .libs.aws import get_all_aws_ami
 from flask import Flask
 from logging.config import dictConfig
 
+delay_time = 180 # 3 minutes
 dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -18,6 +21,15 @@ dictConfig({
         'handlers': ['wsgi']
     }
 })
+
+def aws_ami():
+    while True:
+        get_all_aws_ami()
+        sleep(delay_time)
+
+# Start the threading to retrieve ami images
+aws_cron = threading.Thread(target=aws_ami)
+aws_cron.start()
 
 def create_app(test_config=None):
     # create and configure the app
