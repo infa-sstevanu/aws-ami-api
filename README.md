@@ -99,19 +99,19 @@ limit
 
 ### Example
 
-Get all ami ids of AWS, R36 and RHEL (include Centos and RedHat)
+Get all ami ids of AWS, R36 and RHEL(RedHat)
 ```bash
 $ curl "http://API_URL/ami?provider=aws&release=R36&os=rhel"
 ```
 
-Get all ami ids of AWS/R36/RedHat
+Get all ami ids of AWS/R36/RedHat(RHEL)
 ```bash
 $ curl "http://API_URL/ami?provider=aws&release=R36&os=redhat"
 ```
 
-Get the last 3 ami ids of AWS/R36/RedHat
+Get the last 3 ami ids of AWS/R36/RHEL
 ```bash
-$ curl "http://API_URL/ami?provider=aws&release=R36&os=redhat&limit=3"
+$ curl "http://API_URL/ami?provider=aws&release=R36&os=rhel&limit=3"
 ```
 
 Get the last 10 ami ids of AWS/R36/Centos
