@@ -10,11 +10,15 @@ db = init_db()
 Images = Query()
 aws_table = db.table('aws')
 
-def filter_ami_image(ami_image, release, platform, types=None):
-    platform_list = ["CENTOS", "REDHAT", "RHEL"]
+platforms = {
+    "rhel": ["rhel", "redhat"],
+    "redhat": ["rhel", "redhat"],
+    "centos": ["centos"]
+}
 
+def filter_ami_image(ami_image, release, platform, types=None):
     release = release.upper()
-    platform = platform.upper()
+    platform = re.match(r'[a-zA-Z]+', platform.lower()).group()
     types = types.upper() or None
 
     if release not in ami_image['release']:
@@ -23,14 +27,12 @@ def filter_ami_image(ami_image, release, platform, types=None):
         return False
     if platform == ami_image['os']:
         return True   
-    if platform=='RHEL' and re.match(r'[a-zA-Z]+', ami_image['os']).group() in platform_list:
+    
+    ami_platform = ami_image['name'].split('-')[2]
+    ami_platform = re.match(r'[a-zA-Z]+', ami_platform.lower()).group()
+    if platform in platforms[ami_platform]:
         return True
-    if re.match(r'[a-zA-Z]+', platform).group() in platform_list:
-        if re.match(r'[a-zA-Z]+', ami_image['os']).group() not in platform_list:
-            return False
-        if re.match(r'[a-zA-Z]+', platform).group() not in ami_image['os']:
-            return False
-    return True
+    return False
 
 def extract_aws_ami_tags(tags):
     release = ""
@@ -70,8 +72,8 @@ def get_all_aws_ami(log):
                     "type": ami_type, 
                     "region": region,
                     "os": ami_platform,
-                    "ami_id": ami_id, 
-                    "ami_name": ami_name,
+                    "id": ami_id, 
+                    "name": ami_name,
                     "creation_date": ami_creation_date }
                 
                 log.info("{} {}".format(ami_id, ami_name))
@@ -86,6 +88,7 @@ def get_ami_aws(release, platform, types=None, limit=None):
     aws_images = aws_table.all()
     aws_images = sorted(aws_images, key=lambda x: x['creation_date'], reverse=True)
     result = []
+
     for ami_image in aws_images:
         if filter_ami_image(ami_image, release, platform, types):
             result.append(ami_image)
@@ -97,4 +100,4 @@ def get_ami_aws(release, platform, types=None, limit=None):
         current_app.logger.info(e)
         return { 'err_msg': 'limit value is not integer' }
 
-    return { 'ami_ids': result }
+    return { 'ami_images': result }
