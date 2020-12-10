@@ -5,21 +5,33 @@ from flask import Blueprint, flash, g, request
 from flask import current_app
 from .libs.error_msg import request_cannot_empty
 from .libs.aws import get_ami_aws
+from prometheus_client import CollectorRegistry, Counter, generate_latest, multiprocess, Histogram
+
+REQUEST_LATENCY = Histogram(__name__.replace('.', '_') + '_request_latency_seconds', 'Flask Request Latency')
+REQUEST_COUNTER = Counter(__name__.replace('.', '_') + '_request_counter', 'Flask Request Counter', ['method', 'endpoint'])
 
 bp = Blueprint('ami', __name__, url_prefix='/')
 
-cloud_session_expired = 'Cloud Session has expired'
-
 @bp.route('/', methods=['GET'])
 def index():
+    REQUEST_COUNTER.labels('get', '/').inc()
     return { "name":"ami_api", "description":"REST API to get an ami based on regions, products and/or services" }
 
 @bp.route('/health', methods=['GET'])
 def health():
+    REQUEST_COUNTER.labels('get', '/health').inc()
     return { "status": "healthy" }
 
+@bp.route('/metrics', methods=['GET'])
+def metrics():
+    registry = CollectorRegistry()
+    multiprocess.MultiProcessCollector(registry)
+    return generate_latest(registry), 200
+
+@REQUEST_LATENCY.time()
 @bp.route('/ami', methods=['GET'])
 def get_ami():
+    REQUEST_COUNTER.labels('get', '/ami').inc()
     current_app.logger.info(request.args)
 
     provider = request.args.get('provider', '')

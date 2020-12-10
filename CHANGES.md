@@ -21,3 +21,7 @@
 ------------------
 * Implement the tinydb json
 * Update the sorting and query result
+
+0.6.0 (2020-12-10)
+------------------
+* Adding prometheus metrics

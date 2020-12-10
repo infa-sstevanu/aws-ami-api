@@ -4,6 +4,7 @@ from botocore.config import Config
 from flask import current_app, g
 from tinydb import Query
 from .db import init_db
+from .error_msg import cloud_session_expired
 
 db = init_db()
 Images = Query()
@@ -79,6 +80,7 @@ def get_all_aws_ami(log):
                     aws_table.insert(ami_details)
         except Exception as e:
             log.info(e)
+            return cloud_session_expired()
 
 def get_ami_aws(release, platform, types=None, limit=None):
     aws_images = aws_table.all()
@@ -95,4 +97,4 @@ def get_ami_aws(release, platform, types=None, limit=None):
         current_app.logger.info(e)
         return { 'err_msg': 'limit value is not integer' }
 
-    return { 'images': result }
+    return { 'ami_ids': result }
