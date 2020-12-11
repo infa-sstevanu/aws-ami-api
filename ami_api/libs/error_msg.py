@@ -5,6 +5,6 @@ def request_cannot_empty(str):
     current_app.logger.info(err_msg)
     return { 'error_msg': err_msg }
 
-def cloud_session_expired():
-    err_msg = 'Cloud Session has expired'
+def cannot_connect_cloud():
+    err_msg = 'Cannot connect to cloud provider'
     return { 'error_msg': err_msg }

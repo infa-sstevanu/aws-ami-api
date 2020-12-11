@@ -25,3 +25,7 @@
 0.6.0 (2020-12-10)
 ------------------
 * Adding prometheus metrics
+
+0.7.0 (2020-12-10)
+------------------
+* Bug fix, send logs if API cannot connect to cloud provider

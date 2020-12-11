@@ -4,9 +4,9 @@ from botocore.config import Config
 from flask import current_app, g
 from tinydb import Query
 from .db import init_db
-from .error_msg import cloud_session_expired
+from .error_msg import cannot_connect_cloud
 
-db = init_db()
+db, Status = init_db()
 Images = Query()
 aws_table = db.table('aws')
 
@@ -45,17 +45,26 @@ def extract_aws_ami_tags(tags):
     result = [release, platform]
     return result
 
+def get_all_aws_regions(log):
+    try:
+        aws_config = Config(region_name='us-west-2')
+        ec2 = boto3.client('ec2', config=aws_config)
+        regions = ec2.describe_regions()
+
+        # Can connect to AWS
+        db.update({ 'aws_conn_status': 1 })
+
+        return [region['RegionName'] for region in regions['Regions']]
+    except Exception as e:
+        # Cannot connect to AWS
+        db.update({ 'aws_conn_status': 0 })
+        log.info(e)
+        return []
+
 def get_all_aws_ami(log):
     regions = []
-
-    aws_config = Config(region_name='us-west-2')
-    ec2 = boto3.client('ec2', config=aws_config)
-    resp = ec2.describe_regions()
     
-    for region in resp['Regions']:
-        regions.append(region['RegionName'])
-    
-    for region in regions:
+    for region in get_all_aws_regions(log):
         aws_config = Config(region_name=region)
         client = boto3.client('ec2', config=aws_config)
 
@@ -78,17 +87,20 @@ def get_all_aws_ami(log):
                 
                 log.info("{} {}".format(ami_id, ami_name))
 
-                if not aws_table.search(Images.ami_id == ami_id):
+                if not aws_table.search(Images.id == ami_id):
                     aws_table.insert(ami_details)
         except Exception as e:
             log.info(e)
-            return cloud_session_expired()
+
 
 def get_ami_aws(release, platform, types=None, limit=None):
     aws_images = aws_table.all()
     aws_images = sorted(aws_images, key=lambda x: x['creation_date'], reverse=True)
     result = []
-
+    
+    if db.search(Status.aws_conn_status == 0):
+        return cannot_connect_cloud()
+        
     for ami_image in aws_images:
         if filter_ami_image(ami_image, release, platform, types):
             result.append(ami_image)
