@@ -43,4 +43,19 @@ def get_all_gcp_ami(log):
         request = service.images().list_next(previous_request=request, previous_response=response)
     
 
+def get_ami_gcp(release, platform, types=None, limit=None):
+    gcp_images = gcp_table.all()
+    gcp_images = sorted(gcp_images, key=lambda x: x['creation_date'], reverse=True)
+    result = gcp_images
+    
+    if db.search(Status.gcp_conn_status == 0):
+        return cannot_connect_cloud()
 
+    try:
+        if limit:
+            result = result[:int(limit)]
+    except ValueError as e:
+        current_app.logger.info(e)
+        return { 'err_msg': 'limit value is not integer' }
+
+    return { 'ami_images': result }
