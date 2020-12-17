@@ -5,6 +5,7 @@ from flask import Blueprint, flash, g, request
 from flask import current_app
 from .libs.error_msg import request_cannot_empty
 from .libs.aws import get_ami_aws
+from .libs.gcp import get_ami_gcp
 from prometheus_client import CollectorRegistry, Counter, generate_latest, multiprocess, Histogram
 
 REQUEST_LATENCY = Histogram(__name__.replace('.', '_') + '_request_latency_seconds', 'Flask Request Latency')
@@ -49,5 +50,7 @@ def get_ami():
 
     if provider.lower() == 'aws':
         return get_ami_aws(release, platform, types, limit)
+    elif provider.lower() == 'gcp':
+        return get_ami_gcp(release, platform, types, limit)
     else:
         return { "err_msg": "Provider '{}' is not available".format(provider) }

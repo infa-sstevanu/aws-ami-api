@@ -47,7 +47,7 @@ def extract_aws_ami_tags(tags):
 
 def get_all_aws_regions(log):
     try:
-        aws_config = Config(region_name='us-west-2')
+        aws_config = Config(region_name='us-west-2', retries={'mode': 'standard', 'max_attempts': 5})
         ec2 = boto3.client('ec2', config=aws_config)
         regions = ec2.describe_regions()
 
@@ -55,7 +55,10 @@ def get_all_aws_regions(log):
         db.update({ 'aws_conn_status': 1 })
 
         return [region['RegionName'] for region in regions['Regions']]
+
     except Exception as e:
+        log.info('load aws')
+        log.info(aws_config)
         # Cannot connect to AWS
         db.update({ 'aws_conn_status': 0 })
         log.info(e)
@@ -65,7 +68,7 @@ def get_all_aws_ami(log):
     regions = []
     
     for region in get_all_aws_regions(log):
-        aws_config = Config(region_name=region)
+        aws_config = Config(region_name=region, retries={'mode': 'standard', 'max_attempts': 5})
         client = boto3.client('ec2', config=aws_config)
 
         try:

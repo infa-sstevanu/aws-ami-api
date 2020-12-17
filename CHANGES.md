@@ -29,3 +29,7 @@
 0.7.0 (2020-12-10)
 ------------------
 * Bug fix, send logs if API cannot connect to cloud provider
+
+0.8.0 (2020-12-17)
+------------------
+* Add GCP Provider
