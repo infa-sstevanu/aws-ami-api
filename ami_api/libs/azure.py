@@ -63,6 +63,7 @@ def get_all_azure_ami(log):
                 release = gallery_image_properties.name
                 gallery_link = gallery_image_properties.id
                 published_date = gallery_image_properties.publishing_profile.published_date
+                published_date = published_date.strftime('%Y-%m-%dT%H:%M:%S.%f-%z')
                 
                 ami_details = {
                     "published_date": published_date,
@@ -74,7 +75,25 @@ def get_all_azure_ami(log):
                     "gallery_link": gallery_link
                 }
 
-                log.info(ami_details)
+                if not azure_table.search(Images.gallery_link == gallery_link):
+                    azure_table.insert(ami_details)
 
         except Exception as e:
             log.info(e)
+
+def get_ami_azure(release, platform, types=None, limit=None):
+    azure_images = azure_table.all()
+    #azure_images = sorted(azure_images, key=lambda x: x['published_date'], reverse=True)
+    result = azure_images
+    
+    if db.search(Status.azure_conn_status == 0):
+        return cannot_connect_cloud("azure")
+
+    try:
+        if limit:
+            result = result[:int(limit)]
+    except ValueError as e:
+        current_app.logger.info(e)
+        return { 'err_msg': 'limit value is not integer' }
+
+    return { 'ami_images': result }

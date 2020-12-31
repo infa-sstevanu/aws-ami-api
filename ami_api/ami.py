@@ -6,7 +6,7 @@ from flask import current_app
 from .libs.error_msg import request_cannot_empty
 from .libs.aws import get_ami_aws
 from .libs.gcp import get_ami_gcp
-from .lib.azure import get_ami_azure
+from .libs.azure import get_ami_azure
 from prometheus_client import CollectorRegistry, Counter, generate_latest, multiprocess, Histogram
 
 REQUEST_LATENCY = Histogram(__name__.replace('.', '_') + '_request_latency_seconds', 'Flask Request Latency')

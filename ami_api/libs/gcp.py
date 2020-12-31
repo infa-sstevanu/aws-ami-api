@@ -22,8 +22,13 @@ def get_all_gcp_ami(log):
 
         for image in response['items']:
             ami_id = image['id']
-            locations = image['storageLocations']
+            regions = image['storageLocations']
             family = image['family']
+            try:
+                image_type, os = family.split('-')
+            except Exception as e:
+                log.info(e)
+
             name = image['name']
             creation_date = image['creationTimestamp']
 
@@ -31,12 +36,15 @@ def get_all_gcp_ami(log):
 
             ami_details = {
                 "id": ami_id,
-                "locations": locations,
-                "os": family,
+                "regions": regions,
                 "name": name,
+                "type": image_type,
+                "os": os,
+                "family": family,
                 "creation_date": creation_date,
                 "project": project
             }
+
             if not gcp_table.search(Images.id == ami_id):
                 gcp_table.insert(ami_details)
 
