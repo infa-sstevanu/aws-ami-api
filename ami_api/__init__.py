@@ -30,6 +30,16 @@ def create_app(test_config=None):
     gcp_cron = threading.Thread(target=gcp_ami)
     gcp_cron.start()
 
+    def azure_ami():
+        while True:
+            from .libs.azure import get_all_azure_ami
+            get_all_azure_ami(app.logger)
+            sleep(delay_time)
+    
+    # Threading for the gcp ami
+    azure_cron = threading.Thread(target=azure_ami)
+    azure_cron.start()
+
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)

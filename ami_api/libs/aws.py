@@ -64,9 +64,7 @@ def get_all_aws_regions(log):
         log.info(e)
         return []
 
-def get_all_aws_ami(log):
-    regions = []
-    
+def get_all_aws_ami(log):    
     for region in get_all_aws_regions(log):
         aws_config = Config(region_name=region, retries={'mode': 'standard', 'max_attempts': 5})
         client = boto3.client('ec2', config=aws_config)
@@ -102,7 +100,7 @@ def get_ami_aws(release, platform, types=None, limit=None):
     result = []
     
     if db.search(Status.aws_conn_status == 0):
-        return cannot_connect_cloud()
+        return cannot_connect_cloud("aws")
         
     for ami_image in aws_images:
         if filter_ami_image(ami_image, release, platform, types):
