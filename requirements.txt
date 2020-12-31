@@ -1,8 +1,11 @@
+azure-identity
+azure-mgmt-compute
 boto3
 coverage
 flask
 google-api-python-client
 gunicorn
+msrestazure
 oauth2client
 prometheus_client
 pytest

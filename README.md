@@ -3,6 +3,8 @@
 This API will return a AWS AMI ID based on regions, tags, and other filters
 
 ## Requirements
+
+### AWS Access
 Make sure you have AWS EC2ReadOnly access in ~/.aws/credentials
 or using AWS environment variable
 
@@ -10,6 +12,12 @@ or using AWS environment variable
 export AWS_ACCESS_KEY_ID=xxx
 export AWS_SECRET_ACCESS_KEY=xxx
 export AWS_REGION=<aws_region>
+```
+
+### GCP Access
+Need to add/setup the application_default_credentials.json in the $HOME folder using below command
+```bash
+$ gcloud auth application-default login
 ```
 
 ## Manual Installation
