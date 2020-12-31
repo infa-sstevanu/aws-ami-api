@@ -49,7 +49,7 @@ def get_ami_gcp(release, platform, types=None, limit=None):
     result = gcp_images
     
     if db.search(Status.gcp_conn_status == 0):
-        return cannot_connect_cloud()
+        return cannot_connect_cloud("gcp")
 
     try:
         if limit:
