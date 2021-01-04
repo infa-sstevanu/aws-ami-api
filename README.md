@@ -46,6 +46,13 @@ $ source .venv/bin/activate
 $ pip install -r requirements
 ```
 
+### Unit Test (Optional)
+
+After setup the virtualenv and install the pip modules
+```bash
+$ pytest -v .
+```
+
 ### Run the application (for Development env)
 
 ```bash

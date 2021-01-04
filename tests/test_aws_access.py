@@ -1,4 +1,5 @@
 import boto3
+
 from botocore.config import Config
 
 aws_config = Config(region_name='us-west-2')
