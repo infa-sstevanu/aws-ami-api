@@ -4,7 +4,7 @@ from botocore.config import Config
 from flask import current_app, g
 from tinydb import Query
 from .db import init_db
-from .error_msg import cannot_connect_cloud
+from .error_msg import cannot_connect_cloud, limit_param_must_be_integer
 
 db, Status = init_db()
 Images = Query()
@@ -57,8 +57,6 @@ def get_all_aws_regions(log):
         return [region['RegionName'] for region in regions['Regions']]
 
     except Exception as e:
-        log.info('load aws')
-        log.info(aws_config)
         # Cannot connect to AWS
         db.update({ 'aws_conn_status': 0 })
         log.info(e)
@@ -90,6 +88,8 @@ def get_all_aws_ami(log):
 
                 if not aws_table.search(Images.id == ami_id):
                     aws_table.insert(ami_details)
+                else:
+                    aws_table.update(ami_details, Images.id == ami_id)
         except Exception as e:
             log.info(e)
 
@@ -111,6 +111,6 @@ def get_ami_aws(release, platform, types=None, limit=None):
             result = result[:int(limit)]
     except ValueError as e:
         current_app.logger.info(e)
-        return { 'err_msg': 'limit value is not integer' }
+        return limit_param_must_be_integer()
 
     return { 'ami_images': result }

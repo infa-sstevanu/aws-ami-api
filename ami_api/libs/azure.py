@@ -1,13 +1,26 @@
+from flask import current_app
 from tinydb import Query
 from .db import init_db
-from .error_msg import cannot_connect_cloud
+from .error_msg import cannot_connect_cloud, limit_param_must_be_integer
 from azure.identity import AzureCliCredential
 from azure.mgmt.compute import ComputeManagementClient
+import re
 import os
 
 db, Status = init_db()
 Images = Query()
 azure_table = db.table('azure')
+
+def refine_query_result(azure_image, release, image_os, types=None):
+    release = re.search(r'[0-9]+', release).group()
+    if release.lower() not in azure_image['release'].lower():
+        return False
+    if image_os not in azure_image['os']:
+        return False
+    if types:
+        if types not in azure_image['type']:
+            return False
+    return True
 
 def get_all_azure_ami(log):
     credential = AzureCliCredential()
@@ -49,10 +62,10 @@ def get_all_azure_ami(log):
                 image_detail = image_name.split('-')
 
                 if len(image_detail) == 4:
-                    image_type = image_detail[1]
+                    image_type = image_detail[1].lower()
                     image_os = image_detail[2]
                 else:
-                    image_type = image_detail[0]
+                    image_type = image_detail[0].lower()
                     if "centos" in image_name:
                         image_os = "centos"
                     elif "redhat" in image_name or "rhel" in image_name: 
@@ -77,23 +90,29 @@ def get_all_azure_ami(log):
 
                 if not azure_table.search(Images.gallery_link == gallery_link):
                     azure_table.insert(ami_details)
+                else:
+                    azure_table.update(ami_details, Images.gallery_link == gallery_link)
 
         except Exception as e:
             log.info(e)
 
 def get_ami_azure(release, platform, types=None, limit=None):
     azure_images = azure_table.all()
-    #azure_images = sorted(azure_images, key=lambda x: x['published_date'], reverse=True)
-    result = azure_images
+    azure_images = sorted(azure_images, key=lambda x: x['published_date'], reverse=True)
+    result = []
     
     if db.search(Status.azure_conn_status == 0):
         return cannot_connect_cloud("azure")
+
+    for azure_image in azure_images:
+        if refine_query_result(azure_image, release, platform, types):
+            result.append(azure_image)
 
     try:
         if limit:
             result = result[:int(limit)]
     except ValueError as e:
         current_app.logger.info(e)
-        return { 'err_msg': 'limit value is not integer' }
+        return limit_param_must_be_integer()
 
     return { 'ami_images': result }

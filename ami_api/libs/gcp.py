@@ -1,6 +1,7 @@
+from flask import current_app
 from tinydb import Query
 from .db import init_db
-from .error_msg import cannot_connect_cloud
+from .error_msg import cannot_connect_cloud, limit_param_must_be_integer
 from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 
@@ -47,6 +48,8 @@ def get_all_gcp_ami(log):
 
             if not gcp_table.search(Images.id == ami_id):
                 gcp_table.insert(ami_details)
+            else:
+                gcp_table.update(ami_details, Images.id == ami_id)
 
         request = service.images().list_next(previous_request=request, previous_response=response)
     
@@ -64,6 +67,6 @@ def get_ami_gcp(release, platform, types=None, limit=None):
             result = result[:int(limit)]
     except ValueError as e:
         current_app.logger.info(e)
-        return { 'err_msg': 'limit value is not integer' }
+        return limit_param_must_be_integer()
 
     return { 'ami_images': result }
