@@ -42,3 +42,7 @@
 -------------------
 * List images on Azure
 * Add lines to update table if there's new changes in the image tags/labels
+
+0.11.0 (2021-01-04)
+-------------------
+* Finalized the unit test
