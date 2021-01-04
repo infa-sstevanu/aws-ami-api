@@ -37,3 +37,8 @@
 0.9.0 (2020-12-31)
 ------------------
 * Add Azure Provider
+
+0.10.0 (2021-01-04)
+-------------------
+* List images on Azure
+* Add lines to update table if there's new changes in the image tags/labels

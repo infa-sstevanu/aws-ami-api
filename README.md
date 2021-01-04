@@ -20,6 +20,10 @@ Need to add/setup the application_default_credentials.json in the $HOME folder u
 $ gcloud auth application-default login
 ```
 
+### Azure Access
+Follow this link to setup the Azure access for the API to be able to list the images
+https://docs.microsoft.com/en-us/azure/developer/python/configure-local-development-environment?tabs=cmd
+
 ## Manual Installation
 
 ### Clone the repo
