@@ -15,8 +15,19 @@ def refine_query_result(azure_image, release, image_os, types=None):
     release = re.search(r'[0-9]+', release).group()
     if release.lower() not in azure_image['release'].lower():
         return False
-    if image_os not in azure_image['os']:
-        return False
+    
+    operating_systems = [
+        ['centos'],
+        ['redhat', 'rhel']
+    ]
+
+    image_os = re.search(r'[a-z]+', image_os).group()
+    azure_image_os = re.search(r'[a-z]+', azure_image['os']).group()
+
+    for operating_system in operating_systems:
+        if image_os in operating_system and azure_image_os not in operating_system:
+            return False
+            
     if types:
         if types not in azure_image['type']:
             return False
