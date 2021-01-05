@@ -46,3 +46,7 @@
 0.11.0 (2021-01-04)
 -------------------
 * Finalized the unit test
+
+0.11.1 (2021-01-05)
+-------------------
+* Bug fix for azure images to query both 'rhel' and 'redhat' as the same OS
