@@ -46,6 +46,23 @@ $ source .venv/bin/activate
 $ pip install -r requirements
 ```
 
+### Set at least one cloud_enabled environment variable
+
+To enable the AWS set below env:
+```bash
+$ export AWS_ENABLED=true
+```
+
+To enable GCP
+```bash
+$ export GCP_ENABLED=true
+```
+
+To enable Azure
+```bash
+$ export AZURE_ENABLED=true
+```
+
 ### Unit Test (Optional)
 
 After setup the virtualenv and install the pip modules

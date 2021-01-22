@@ -1,8 +1,7 @@
 import os
 import threading
 from time import sleep
-from flask import Flask, g
-from logging.config import dictConfig
+from flask import Flask, current_app
 
 delay_time = 180 # 3 minutes
 
@@ -16,9 +15,22 @@ def create_app(test_config=None):
             get_all_aws_ami(app.logger)
             sleep(delay_time)
     
+    aws_enabled = ""
+    gcp_enabled =  ""
+    azure_enabled = ""
+
+    try:
+        aws_enabled = os.environ['AWS_ENABLED']
+        gcp_enabled = os.environ['GCP_ENABLED']
+        azure_enabled = os.environ['AZURE_ENABLED']
+    except Exception as e:
+        print("Environment variable {} is not set".format(e))
+
     # Threading for the aws ami
-    aws_cron = threading.Thread(target=aws_ami)
-    aws_cron.start()
+    if aws_enabled.lower() == 'true':
+        print("Start the aws thread")
+        aws_cron = threading.Thread(target=aws_ami)
+        aws_cron.start()
 
     def gcp_ami():
         while True:
@@ -27,8 +39,10 @@ def create_app(test_config=None):
             sleep(delay_time)
     
     # Threading for the gcp ami
-    gcp_cron = threading.Thread(target=gcp_ami)
-    gcp_cron.start()
+    if gcp_enabled.lower() == 'true':
+        print("Start the gcp thread")
+        gcp_cron = threading.Thread(target=gcp_ami)
+        gcp_cron.start()
 
     def azure_ami():
         while True:
@@ -37,8 +51,10 @@ def create_app(test_config=None):
             sleep(delay_time)
     
     # Threading for the gcp ami
-    azure_cron = threading.Thread(target=azure_ami)
-    azure_cron.start()
+    if azure_enabled.lower() == 'true':
+        print("Start the azure thread")
+        azure_cron = threading.Thread(target=azure_ami)
+        azure_cron.start()
 
     if test_config is None:
         # load the instance config, if it exists, when not testing

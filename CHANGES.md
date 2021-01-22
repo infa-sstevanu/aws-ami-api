@@ -50,3 +50,7 @@
 0.11.1 (2021-01-05)
 -------------------
 * Bug fix for azure images to query both 'rhel' and 'redhat' as the same OS
+
+0.11.2 (2021-01-22)
+-------------------
+* Set environment variable to choose which cloud provider that the API able to list the images
