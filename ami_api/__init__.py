@@ -1,7 +1,7 @@
 import os
 import threading
 from time import sleep
-from flask import Flask, current_app
+from flask import Flask
 
 delay_time = 180 # 3 minutes
 
